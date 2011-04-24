@@ -1,0 +1,30 @@
+MellissaMaze
+============
+
+Introduction
+------------
+
+A remake of the old ZX81 Mazogs game. My six-year old Melissa provided the artwork
+
+It is my first Scala program and my first attempt at OpenGL through the LWJGL
+
+It is a weekend project. It may be a useful reference for you, but it has not
+enjoyed all the rigour one would put into production code
+
+I have not decided on a reuse license. It it matters to you, contact me
+
+
+Dependencies
+------------
+
+* Scala compiler
+* scons
+
+
+Build and Run
+-------------
+
+it works on Windows, Linux and Mac
+
+.../MelissaMaze$ scons
+.../MelissaMaze$ ./target/mm  (or target\mm.bat on windows)
