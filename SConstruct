@@ -1,40 +1,67 @@
-import os,platform
+import os,platform,shutil
 
 env = Environment()
+env["verbose"] = True
+def dpf(s):
+    if env["verbose"]: print s
 
+#
+# project settings
+#         
+env["name"]  = r"MelissaMaze"     # final script name               
+env["entry"] = "Main"             # main entry point
+env["src"]   = r"./src"           # source code
+env["bin"]   = r"./out/bin"       # final binaries
+env["out"]   = r"./out/class"     # intermediate class files
+env["jars"]  = [                  # jars to include
+    "lib/lwjgl-2.7.1/jar/lwjgl.jar",
+    "lib/lwjgl-2.7.1/jar/lwjgl_util.jar",
+    "lib/slick-util/slick-util.jar",
+]
+
+#
+# working environment
 #
 # determine platform to build for
-#
 print platform.system()
-env["windows"] = platform.system()=="Windows"
-env["mac"]     = platform.system()=="Mac"
-env["linux"]   = platform.system()=="Linux"
+if platform.system()=="Windows":
+    dpf ("Building on Windows")
+    env["platform"] = 0
+elif platform.system()=="Mac":
+    dpf ("Building on a Mac")
+    env["platform"] = 1
+elif platform.system()=="Linux":
+    dpf ("Building on good old Linux")
+    env["platform"] = 2
+else:
+    raise Exception("Cannot determine platform to build for")
+
+# extract important enviroment variables
+env["SCALA_HOME"] = os.environ["SCALA_HOME"]
+env["JAVA_HOME"]  = os.environ["JAVA_HOME"]
+dpf ("SCALA_HOME = %s" % env["SCALA_HOME"])
+dpf ("JAVA_HOME  = %s" % env["JAVA_HOME"])
 
 # platform derivatives
-env["sep"] = ';' if env["windows"] else ':'
+env["sep"] = ";::"[env["platform"]]
+def sh(fn): return fn if env["platform"]!=0 else fn+".bat"
 
-#
-# set up scala enviroment
-#
-env["scalapath"] = r"c:/users/Ben/Programs/scala-2.8.1.final/bin"
-env["scalac"]    = os.path.join(env["scalapath"],"fsc.bat")
-env["scalaargs"] = "-classpath "+env["sep"].join([
-                        "lib/lwjgl-2.7.1/jar/lwjgl.jar",
-                        "lib/lwjgl-2.7.1/jar/lwjgl_util.jar",
-                        "lib/slick-util/slick-util.jar"])
-env["src"] = r"./src"
-env["bin"] = r"./out/bin"
-env["out"] = r"./out/class"
+# set up scala
+env["SCc"]    = os.path.join(env["SCALA_HOME"],"bin",sh("fsc"))
+env["SCargs"] = ""
+env["SClib"]  = os.path.join(env["SCALA_HOME"],"lib","scala-library.jar")
 
 #
 # scala builders
 #
 def scala_emitter(env,target,source):
+    # use all .scala files in source folder
     for root,dirs,files in os.walk(env["src"]):
         for file in files:
             if file.endswith('.scala'):
                 path = os.path.join(root,file)
                 source.append (path)
+    # final desitnation
     target.append (os.path.join(env["bin"],"MelissaMaze"))
     return target,source
     
@@ -45,22 +72,47 @@ def scala_builder(env,target,source):
     try: os.makedirs (env["out"])
     except: pass
     
+    
     # compile scala files
-    cl = "%s %s -d %s %s" % (env["scalac"],env["scalaargs"],env["out"]," ".join(str(s) for s in source))
-    print cl
+    cl = ' '.join([
+        env["SCc"],
+        "-classpath "+env["sep"].join(env["jars"]),
+        env["SCargs"],
+        "-d "+env["out"],
+        " ".join([str(s) for s in source])
+    ])
+    dpf (cl)
     os.system (cl)
     
     # package into jar
-    cl = 'jar -cvfm "%s/MelissaMaze.jar" "%s/MelissaMaze.mf" -C "%s" .' % (env["bin"],env["src"],env["out"])
-    print cl
+    cl = ' '.join([
+        "jar -cvf",
+        os.path.join(env["bin"],env["name"]+".jar"),
+        env["entry"],
+        "-C "+env["out"], ".",
+    ])
+    dpf (cl)
     os.system (cl)
     
     # emit start scripts
-    with open(str(target[0]),"w") as f:
-        f.write ("#!/bin/bash\n")
-    with open(str(target[0])+".bat","w") as f:
-        f.write ("@echo off\n")
-
+    jars = [ 
+        env["name"]+".jar",
+        os.path.join(env["bin"],os.path.basename(env["SClib"])),
+    ] + env["jars"]
+    java =' '.join([
+        "java",
+        "-cp",env["sep"].join(os.path.basename(s) for s in jars),
+        "-Djava.library.path:%s" % [
+            r"../../lib/lwjgl-2.7.1/native/windows",
+            r"../../lib/lwjgl-2.7.1/native/macos",
+            r"../../lib/lwjgl-2.7.1/native/linux",
+        ][env["platform"]],
+        env["entry"],
+    ])
+    with open(sh(str(target[0])),"w") as f:
+        f.write ("cd %s\n" % env["bin"])
+        f.write ("%s\n" % java)
+        f.write ("cd %s\n" % os.path.join("..",".."))
 #
 # go
 #
