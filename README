@@ -1,6 +1,14 @@
 MellissaMaze
 ============
 
+CURRENT STATUS
+--------------
+
+The code builds fine but has trouble running due to some lwjgl difficulties
+Whe I run it from intellij, it works fine. So fare it only draws the maze, no
+further interaction has been coded. That is for next weekend ;-)
+
+
 Introduction
 ------------
 
@@ -9,16 +17,19 @@ A remake of the old ZX81 Mazogs game. My six-year old Melissa provided the artwo
 It is my first Scala program and my first attempt at OpenGL through the LWJGL
 
 It is a weekend project. It may be a useful reference for you, but it has not
-enjoyed all the rigour one would put into production code
+enjoyed all the rigour one would put into production code.
 
-I have not decided on a reuse license. It it matters to you, contact me
+I have not decided on a source/reuse license. If it matters to you, contact me
 
 
 Dependencies
 ------------
 
+* python to build
 * Scala compiler
-* scons
+* SCALA_HOME must point to the scala compiler of your choice
+* JDK naturally
+* JAVA_HOME must point to the JRE of your choice
 
 
 Build and Run
@@ -26,5 +37,5 @@ Build and Run
 
 it works on Windows, Linux and Mac
 
-.../MelissaMaze$ scons
-.../MelissaMaze$ ./target/mm  (or target\mm.bat on windows)
+.../MelissaMaze$ python build.py
+.../MelissaMaze$ out/MelissaMaze (out\MelissaMaze.bat on windows)
