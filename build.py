@@ -50,7 +50,7 @@ JAVA_HOME = os.environ["JAVA_HOME"]
 dpf ("JAVA_HOME  = %s" % JAVA_HOME)
 
 # set up scala
-def sh(s): return s if PLATFORM>0 else sh+".bat"
+def sh(s): return s if PLATFORM>0 else s+".bat"
 SCc    = os.path.abspath(os.path.join(SCALA_HOME,"bin",sh("scalac")))
 SCargs = ""
 SClib  = os.path.abspath(os.path.join(SCALA_HOME,"lib","scala-library.jar"))
@@ -60,7 +60,6 @@ SClib  = os.path.abspath(os.path.join(SCALA_HOME,"lib","scala-library.jar"))
 #
 
 # set up
-LIB = os.path.join(OUT,"lib")
 CLS = os.path.join(OUT,"class")
 SEP = ";::"[PLATFORM]
 
@@ -74,8 +73,6 @@ for file in walk(SRC):
 try: os.makedirs(OUT)
 except: pass
 try: os.makedirs(CLS)
-except: pass
-try: os.makedirs(LIB)
 except: pass
 
 # compile scala files

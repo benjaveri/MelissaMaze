@@ -4,6 +4,10 @@ MellissaMaze
 CURRENT STATUS
 --------------
 
+windows: works
+mac:     not working (only works when built from an IDE)
+linux:   not tested
+
 The code builds fine but has trouble running due to some lwjgl difficulties
 Whe I run it from intellij, it works fine. So fare it only draws the maze, no
 further interaction has been coded. That is for next weekend ;-)
