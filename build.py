@@ -77,11 +77,11 @@ except: pass
 
 # compile scala files
 cl = ' '.join([
-    SCc,
-    "-classpath "+SEP.join(JARS),
+    '"'+SCc+'"',
+    "-classpath "+SEP.join('"'+jar+'"' for jar in JARS),
     SCargs,
-    "-d",CLS,
-    " ".join(source)
+    "-d",'"'+CLS+'"',
+    " ".join('"'+s+'"' for s in source)
 ])
 dpf (cl)
 os.system (cl)
@@ -89,9 +89,9 @@ os.system (cl)
 # emit start scripts
 jars = [ CLS, SClib ] + JARS
 java =' '.join([
-    os.path.join(JAVA_HOME,"bin","java"),
-    "-cp",SEP.join(os.path.abspath(s) for s in jars),
-    '-Djava.library.path=%s' % NATIVES[PLATFORM],
+    '"'+os.path.join(JAVA_HOME,"bin","java")+'"',
+    "-cp",SEP.join('"'+os.path.abspath(s)+'"' for s in jars),
+    '-Djava.library.path="%s"' % NATIVES[PLATFORM],
     ENTRYOBJ,
 ])
 target = os.path.join(OUT,sh(NAME))
@@ -99,4 +99,4 @@ with open(target,"w") as f:
     f.write ("%s\n" % java)
 if PLATFORM > 0:
     os.system ("chmod +x %s" % target)
-dpf (java)
+#dpf (java)
