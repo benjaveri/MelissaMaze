@@ -34,15 +34,13 @@ I have not decided on a source/reuse license. If it matters to you, contact me.
 Copyright (c) 2009-2011 by the de Waal family. All Rights reserved
 
 
-Dependencies
-------------
+Dependencies to build
+---------------------
 
 * python to build
+* JDK
 * Scala compiler
 * SCALA_HOME must point to the scala compiler of your choice
-* JDK naturally
-* JAVA_HOME must point to the JRE of your choice
-
 
 Build and Run
 -------------
@@ -51,3 +49,10 @@ it works on Windows, Linux and Mac
 
 .../MelissaMaze$ python build.py
 .../MelissaMaze$ out/MelissaMaze (out\MelissaMaze.bat on windows)
+
+Deployment
+----------
+
+copying the contents of out/ afte a successful build shold be enough to
+run on any machine, as long as they have a suitable JRE installed and
+have jave on the user's path

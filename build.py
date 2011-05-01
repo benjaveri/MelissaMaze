@@ -1,4 +1,4 @@
-import os,platform,shutil
+import os,platform,shutil,glob
 
 #
 # project settings
@@ -22,15 +22,10 @@ NATIVES  = [                # native directories to include (in PLATFORM order)
 #
 # working environment
 #
+# determine platform to build for
 def dpf(s):
     if VERBOSE: print s
 
-def walk(dir):
-    for root,dirs,files in os.walk(dir):
-        for file in files:
-            yield os.path.join(root,file)
-
-# determine platform to build for
 if platform.system()=="Windows":
     dpf ("Building on Windows")
     PLATFORM = 0
@@ -41,16 +36,29 @@ elif platform.system()=="Linux":
     dpf ("Building on good old Linux")
     PLATFORM = 2
 else:
-    raise Exception("Cannot determine platform to build for")
+    raise Exception("Cannot determine platform we're building on")
+
+def sh(s):
+    return s if PLATFORM>0 else s+".bat"
+
+def join(*s):
+    return "/".join(s)
+
+def pathToPlatform(s):
+    return s if PLATFORM>0 else s.replace("/","\\")
+
+def walk(dir):
+    for root,dirs,files in os.walk(dir):
+        for file in files:
+            yield os.path.join(root,file)
 
 # extract important enviroment variables
 SCALA_HOME = os.environ["SCALA_HOME"]
 dpf ("SCALA_HOME = %s" % SCALA_HOME)
-JAVA_HOME = os.environ["JAVA_HOME"]
-dpf ("JAVA_HOME  = %s" % JAVA_HOME)
+#JAVA_HOME = os.environ["JAVA_HOME"]
+#dpf ("JAVA_HOME  = %s" % JAVA_HOME)
 
 # set up scala
-def sh(s): return s if PLATFORM>0 else s+".bat"
 SCc    = os.path.abspath(os.path.join(SCALA_HOME,"bin",sh("scalac")))
 SCargs = ""
 SClib  = os.path.abspath(os.path.join(SCALA_HOME,"lib","scala-library.jar"))
@@ -60,7 +68,8 @@ SClib  = os.path.abspath(os.path.join(SCALA_HOME,"lib","scala-library.jar"))
 #
 
 # set up
-CLS = os.path.join(OUT,"class")
+CLS = join(OUT,"class")
+LIB = join(OUT,"lib")
 SEP = ";::"[PLATFORM]
 
 # find all source files
@@ -74,6 +83,24 @@ try: os.makedirs(OUT)
 except: pass
 try: os.makedirs(CLS)
 except: pass
+try: os.makedirs(LIB)
+except: pass
+
+# copy all dependencies to be local (so we can deploy easily)
+libs = []
+dpf ("Copying libraries:")
+for src in [ SClib ] + JARS:
+    dst = os.path.join(LIB,os.path.basename(src))
+    dpf ("  %s -> %s" % (src,dst))
+    shutil.copy (src,dst)
+    libs.append (join("lib",os.path.basename(dst)))
+
+dpf ("Copying native libraries:")
+for path in NATIVES:
+    for src in walk(path):
+        dst = os.path.join(LIB,os.path.basename(src))
+        dpf ("  %s -> %s" % (src,dst))
+        shutil.copy (src,dst)
 
 # compile scala files
 cl = ' '.join([
@@ -83,20 +110,34 @@ cl = ' '.join([
     "-d",'"'+CLS+'"',
     " ".join('"'+s+'"' for s in source)
 ])
-dpf (cl)
+dpf ("Compiling:")
+dpf ("  "+cl)
 os.system (cl)
 
 # emit start scripts
-jars = [ CLS, SClib ] + JARS
+cp = [ "class" ] + libs
 java =' '.join([
-    '"'+os.path.join(JAVA_HOME,"bin","java")+'"',
-    "-cp",SEP.join('"'+os.path.abspath(s)+'"' for s in jars),
-    '-Djava.library.path="%s"' % NATIVES[PLATFORM],
+    "java",
+    "-cp",SEP.join('"{0}/'+s+'"' for s in cp),
+    '-Djava.library.path="{0}/lib"',
     ENTRYOBJ,
 ])
-target = os.path.join(OUT,sh(NAME))
+dpf ("Run invocation:")
+dpf (java)
+
+target = os.path.join(OUT,NAME)
+dpf ("Creating mc & linix scripts")
 with open(target,"w") as f:
-    f.write ("%s\n" % java)
+    f.write ("#!/bin/bash\n")
+    f.write ("DIR=`dirname $0`\n")
+    f.write ("%s\n" % java.format("$DIR"))
 if PLATFORM > 0:
     os.system ("chmod +x %s" % target)
-#dpf (java)
+
+dpf ("Creating windows script")
+target = os.path.join(OUT,NAME+".bat")
+with open(target,"w") as f:
+    f.write ("@echo off\n")
+    f.write ("%s\n" % java.format("%~dp0"))
+
+dpf ("Done")
