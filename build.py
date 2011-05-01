@@ -1,4 +1,4 @@
-import os,platform,shutil,glob
+import os,platform,shutil,glob,tempfile
 
 #
 # project settings
@@ -103,17 +103,23 @@ for path in NATIVES:
         shutil.copy (src,dst)
 
 # compile scala files
+with tempfile.NamedTemporaryFile(mode="wt",delete=False) as af:
+    af.write (' '.join([
+        "-classpath "+SEP.join(JARS),
+        SCargs,
+        "-d",'"'+CLS+'"',
+        "-deprecation",
+        " ".join('"'+s+'"' for s in source)
+    ])+"\n")
+    afname = af.name
 cl = ' '.join([
     '"'+SCc+'"',
-    "-classpath "+SEP.join('"'+jar+'"' for jar in JARS),
-    SCargs,
-    "-d",'"'+CLS+'"',
-    "-deprecation",
-    " ".join('"'+s+'"' for s in source)
+    '@'+afname,
 ])
 dpf ("Compiling:")
 dpf ("  "+cl)
 os.system (cl)
+os.remove (afname)
 
 # emit start scripts
 cp = [ "class" ] + libs
