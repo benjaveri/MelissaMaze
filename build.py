@@ -108,6 +108,7 @@ cl = ' '.join([
     "-classpath "+SEP.join('"'+jar+'"' for jar in JARS),
     SCargs,
     "-d",'"'+CLS+'"',
+    "-deprecation",
     " ".join('"'+s+'"' for s in source)
 ])
 dpf ("Compiling:")
@@ -118,7 +119,7 @@ os.system (cl)
 cp = [ "class" ] + libs
 java =' '.join([
     "java",
-    "-cp",SEP.join('"{0}/'+s+'"' for s in cp),
+    "-cp","{1}".join('"{0}/'+s+'"' for s in cp),
     '-Djava.library.path="{0}/lib"',
     ENTRYOBJ,
 ])
@@ -130,7 +131,7 @@ dpf ("Creating mc & linix scripts")
 with open(target,"w") as f:
     f.write ("#!/bin/bash\n")
     f.write ("DIR=`dirname $0`\n")
-    f.write ("%s\n" % java.format("$DIR"))
+    f.write ("%s\n" % java.format("$DIR",":"))
 if PLATFORM > 0:
     os.system ("chmod +x %s" % target)
 
@@ -138,6 +139,6 @@ dpf ("Creating windows script")
 target = os.path.join(OUT,NAME+".bat")
 with open(target,"w") as f:
     f.write ("@echo off\n")
-    f.write ("%s\n" % java.format("%~dp0"))
+    f.write ("%s\n" % java.format("%~dp0",";"))
 
 dpf ("Done")

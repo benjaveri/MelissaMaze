@@ -77,12 +77,6 @@ class Quest(_data: Array[Symbol]) extends Controller {
   // controller implementation
   //
   def initialize {
-    printf ("%x\n",HEIGHT)
-    printf ("%x\n",FX1)
-    printf ("%x\n",HEIGHT+FX1-1)
-    printf ("%x\n",fixed2int(HEIGHT+FX1-1))
-    println (HEIGHT_TILES)
-
     // set up gl
     GL11.glMatrixMode(GL11.GL_PROJECTION)
     GL11.glLoadIdentity()
@@ -109,9 +103,9 @@ class Quest(_data: Array[Symbol]) extends Controller {
     val oy = -fixedFrac(ty)
 
     GL11.glBegin(GL11.GL_QUADS)
-    for (val ry <- 0 to HEIGHT_TILES) {
+    for (ry <- 0 to HEIGHT_TILES) {
       val y = oy+int2fixed(ry)
-      for (val rx <- 0 to WIDTH_TILES) {
+      for (rx <- 0 to WIDTH_TILES) {
         val x = ox+int2fixed(rx)
 
         if (((rx^ry^ix^iy)&1)==0) GL11.glColor3f(1,1,1)
