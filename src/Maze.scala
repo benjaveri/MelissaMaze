@@ -1,5 +1,7 @@
 /**
  * maze implementation
+ *
+ * Copyright (c) 2009-2011 by the de Waal family. All Rights reserved
  */
 import java.security.SecureRandom
 import org.lwjgl.opengl.{GL11, Display, DisplayMode}

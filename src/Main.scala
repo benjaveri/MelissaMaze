@@ -1,5 +1,7 @@
 /**
  * main program
+ *
+ * Copyright (c) 2009-2011 by the de Waal family. All Rights reserved
  */
 import org.lwjgl.LWJGLException
 import org.lwjgl.opengl.{GL11, Display, DisplayMode}
@@ -11,10 +13,8 @@ object Main
    * game variables
    */
   var fullScreen   = false
-  var screenWidth  = 800
-  var screenHeight = 600
-  var tileWidth    = 64
-  var tileHeight   = 64
+  var screenWidth  = 1280
+  var screenHeight = 1080
 
   /*
     main entry
@@ -25,7 +25,8 @@ object Main
     Display.create
     Display.setVSyncEnabled (true)
 
-    run (new Maze())
+    //run (new Maze())
+    run (new Quest(null))
 
     Display.destroy
   }

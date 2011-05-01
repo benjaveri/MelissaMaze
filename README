@@ -6,23 +6,32 @@ CURRENT STATUS
 
 windows: works
 mac:     works
-linux:   not tested
+linux:   works
 
-So far it only draws the maze, no further interaction has been 
-coded. That is for next weekend ;-)
+So far it only draws the maze, no further interaction has been coded. That is 
+for next weekend ;-)
 
 
 Introduction
 ------------
 
-A remake of the old ZX81 Mazogs game. My six-year old Melissa provided the artwork
+A remake of the old ZX81 Mazogs game by Don Priestley. My six-year old Melissa 
+provided the artwork way back when she was 4.
 
 It is my first Scala program and my first attempt at OpenGL through the LWJGL
 
-It is a weekend project. It may be a useful reference for you, but it has not
-enjoyed all the rigour one would put into production code.
+This is a weekend project. It may be a useful reference for you, but it has not 
+enjoyed all the rigour one would put into production code. It does not
+however suffer from over optimization and attention to details that doesnt
+affect the objectives of the program. So let this be the example it sets ;-)
 
-I have not decided on a source/reuse license. If it matters to you, contact me
+
+License
+-------
+
+I have not decided on a source/reuse license. If it matters to you, contact me.
+
+Copyright (c) 2009-2011 by the de Waal family. All Rights reserved
 
 
 Dependencies
