@@ -1,5 +1,6 @@
 .DS_Store
 .sconsign.dblite
-out/
-bin/
+target/
 .idea/
+*.pyc
+*.iml

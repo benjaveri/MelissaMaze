@@ -1,58 +1,42 @@
 MellissaMaze
 ============
 
-CURRENT STATUS
---------------
-
-windows: works
-mac:     works
-linux:   works
-
-So far it only draws the maze, no further interaction has been coded. That is 
-for next weekend ;-)
-
-
 Introduction
 ------------
 
-A remake of the old ZX81 Mazogs game by Don Priestley. My six-year old Melissa 
-provided the artwork way back when she was 4.
+A remake of the old ZX81 Mazogs game by Don Priestley. My ten-year old Melissa
+provided original artwork way back when she was 4.
 
-It is my first Scala program and my first attempt at OpenGL through the LWJGL
+This is my first app using Slick2D (http://slick.ninjacave.com/)
 
-This is a weekend project. It may be a useful reference for you, but it has not 
-enjoyed all the rigour one would put into production code. It does not
-however suffer from over optimization and attention to details that doesnt
-affect the objectives of the program. So let this be the example it sets ;-)
+This is a weekend project. Progress happens when it happens.
 
 
 License
 -------
 
-I have not decided on a source/reuse license. If it matters to you, contact me.
+I have not decided on a source/reuse license. If it matters to you,
+ contact me.
 
-Copyright (c) 2009-2011 by the de Waal family. All Rights reserved
+MelissaMaze application and artwork copyright (c) 2009-2014 by the
+ De Waal family. All Rights reserved
+
+Slick2D is licensed under the BSD license
+ Copyright (c) 2013, Slick2D
+ (http://slick.ninjacave.com/license/)
+
+A full license disclosure will be done at publication. Maven includes
+ lots of goodies and it takes some effort to figure out what they
+  are.
+
+Copyleft licenses frowned upon.
 
 
-Dependencies to build
----------------------
+Build
+-----
 
-* python to build
-* JDK
-* Scala compiler
-* SCALA_HOME must point to the scala compiler of your choice
+$ mvn package
 
-Build and Run
--------------
+output will be a zip file in the target/ folder you can unzip and run
+ on Mac, Linux or Windows.
 
-it works on Windows, Linux and Mac
-
-.../MelissaMaze$ python build.py
-.../MelissaMaze$ out/MelissaMaze (out\MelissaMaze.bat on windows)
-
-Deployment
-----------
-
-copying the contents of out/ afte a successful build shold be enough to
-run on any machine, as long as they have a suitable JRE installed and
-have jave on the user's path
