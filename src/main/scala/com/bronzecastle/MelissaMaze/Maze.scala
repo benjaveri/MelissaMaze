@@ -69,6 +69,12 @@ class Maze(val width: Int,val height: Int) {
   def place(x: Int,y: Int,t : Byte) { data(x+width*y) = t }
   def get(x: Int,y: Int) = data(x+width*y)
 
+  // function to count # of block symbols surrounding a position
+  def countBlocks(x: Int,y: Int,cnt: Int): Int = {
+    def fn(dir: Int) = if (get(x+dx(dir),y+dy(dir)) == cnt) 1 else 0
+    (0 to 3).map(fn).sum
+  }
+
   def draw() { draw(Int.MaxValue) }
 
   /**
@@ -79,12 +85,6 @@ class Maze(val width: Int,val height: Int) {
    *  c.f. MazeTest.testGenStats
    */
   def draw (steps: Int) {
-    // function to count # of block symbols surrounding a position
-    def countBlocks(x: Int,y: Int): Int = {
-      def fn(dir: Int) = if (get(x+dx(dir),y+dy(dir)) == Maze.TILE_BLOCK) 1 else 0
-      (0 to 3).map(fn).sum
-    }
-
     // one step - either advance in a valid random direction, or backtrack
     def step() {
       if (done) return
@@ -95,7 +95,7 @@ class Maze(val width: Int,val height: Int) {
         val cx = curX + dx(dir)
         val cy = curY + dy(dir)
         if (get(cx,cy) == Maze.TILE_BLOCK) {
-          val cb = countBlocks(cx,cy)
+          val cb = countBlocks(cx,cy,Maze.TILE_BLOCK)
           if (cb == 3) {
             // advance
             curX = cx
@@ -133,6 +133,33 @@ class Maze(val width: Int,val height: Int) {
     }
   }
 
+  //
+  // item placement
+  //
+  def placeItem(items: Array[Byte],on: Byte,permil: Int) = {
+    val available = data.map(x => if (x==on) 1 else 0).sum
+    val total = (permil*available)/1000
+    for (i <- 0 until total) {
+      var placed = false
+      while (!placed) {
+        val x = rng.nextInt(width)
+        val y = rng.nextInt(height)
+        if ((get(x,y)==on) && ((on==Maze.TILE_EMPTY) || (countBlocks(x,y,Maze.TILE_EMPTY)>0))) {
+          val item = items(rng.nextInt(items.size))
+          place(x,y,item)
+          placed = true
+        }
+      }
+    }
+    total
+  }
+  def placePrisoners(permil: Int) = placeItem(Array(Maze.TILE_PRISONER),Maze.TILE_BLOCK,permil)
+  def placeSwords(permil: Int) = placeItem(Array(Maze.TILE_SWORD),Maze.TILE_BLOCK,permil)
+  def placeMonsters(permil: Int) = placeItem(Array(Maze.TILE_MONSTER0,Maze.TILE_MONSTER1,Maze.TILE_MONSTER2,Maze.TILE_MONSTER3),Maze.TILE_EMPTY,permil)
+
+  //
+  // search
+  //
   def clearCrumbs() {
     for (yy <- 0 until height) {
       for (xx <- 0 until width) {
