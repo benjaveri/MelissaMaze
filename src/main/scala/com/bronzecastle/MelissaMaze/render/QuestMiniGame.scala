@@ -3,7 +3,7 @@
  */
 package com.bronzecastle.MelissaMaze.render
 
-import com.bronzecastle.MelissaMaze.MainGame
+import com.bronzecastle.MelissaMaze.{Maze, MainGame}
 import org.newdawn.slick.{Graphics, Input}
 
 /*
@@ -67,17 +67,23 @@ class QuestMiniGame extends MiniGame {
   var STS = 0 // screen tile size, screen resolution dependent
   var tx = 0
   var ty = 0
+  var manX = 0
+  var manY = 0
   val input = Array(false,false,false,false)
 
   //
-  // controller implementation
+  // mini-game implementation
   //
   override def initialize() {
     // screen tile size
     STS = MainGame.screenWidth / 8
-
-    tx = float2fixed(4.5f)
-    ty = float2fixed(0.75f)
+    // start position
+    val maze = MainGame.maze
+    manX = maze.width / 2
+    manY = maze.height / 2
+    maze.place(manX,manY,Maze.TILE_MAN)
+    tx = float2fixed(manX)-float2fixed(3.5f)
+    ty = float2fixed(manY)-(maze.height*float2fixed(3.5f))/maze.width
   }
 
   override def update(delta: Int) {
@@ -104,7 +110,7 @@ class QuestMiniGame extends MiniGame {
         g.drawImage(
           MainGame.largeTileImage,
           dx,dy,dx+STS,dy+STS,
-          sx+1,1,sx+LTS-1,LTS-1 // compensate for bi-linear sampling over borders
+          sx+1,1,sx+LTS-1,LTS-1 // compensate for bi-linear sampling across borders
         )
         dx += STS
         idx += 1
@@ -132,6 +138,26 @@ class QuestMiniGame extends MiniGame {
       case Input.KEY_DOWN => input(2) = false
       case Input.KEY_LEFT => input(3) = false
       case _ => {}
+    }
+  }
+
+  //
+  // character (common to monsters and players)
+  //
+  class Character {
+    // position := base + delta * t
+    var x = 0
+    var y = 0
+    var bx = 0
+    var by = 0
+    var dx = 0
+    var dy = 0
+    var t = 0
+
+    def update(delta: Int) {
+      t += delta
+      x = bx + (t * dx) / 1000
+      y = by + (t * dy) / 1000
     }
   }
 }

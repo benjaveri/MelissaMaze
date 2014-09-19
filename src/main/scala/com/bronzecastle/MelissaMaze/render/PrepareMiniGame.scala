@@ -150,8 +150,10 @@ class PrepareMiniGame extends MiniGame {
 
     override def initialize() {
       val maze = MainGame.maze
-      DrawMaze.left = math.max(0,maze.deepestX-DrawMaze.portalW/2)
-      DrawMaze.top = math.max(0,maze.deepestY-DrawMaze.portalH/2)
+      val mx = maze.width-DrawMaze.portalW
+      val my = maze.height-DrawMaze.portalH
+      DrawMaze.left = math.min(mx,math.max(0,maze.deepestX-DrawMaze.portalW/2))
+      DrawMaze.top = math.min(my,math.max(0,maze.deepestY-DrawMaze.portalH/2))
     }
 
     override def update(delta: Int) {
